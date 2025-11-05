@@ -1,28 +1,705 @@
 <!doctype html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>StackBlitz Zip API</title>
-  <style>body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;margin:2rem}</style>
+  <title>stackblitz.zip — Download StackBlitz projects instantly</title>
+  <meta name="description"
+    content="Download StackBlitz projects programmatically. No authentication or API keys required.">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg: #0a0a0a;
+      --text: #ffffff;
+      --text-muted: #a0a0a0;
+      --border: #1a1a1a;
+      --accent: #646cff;
+      --accent-hover: #747bff;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 2rem;
+      width: 100%;
+    }
+
+    main {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      padding: 10rem 0 4rem;
+    }
+
+    .hero {
+      text-align: center;
+      width: 100%;
+    }
+
+    .hero-title {
+      font-size: clamp(2.5rem, 8vw, 5rem);
+      font-weight: 700;
+      line-height: 1.1;
+      margin-bottom: 1.5rem;
+      color: var(--text);
+      background: linear-gradient(135deg, #ffffff 0%, #a0a0a0 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    @supports not (background-clip: text) {
+      .hero-title {
+        color: var(--text);
+      }
+    }
+
+    .hero-subtitle {
+      font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+      color: var(--text-muted);
+      margin-bottom: 3rem;
+      max-width: 800px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .url-example {
+      margin: 0 auto 4rem;
+      background: #111;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 2rem;
+      max-width: 700px;
+      width: 100%;
+      text-align: left;
+    }
+
+    .url-example h3 {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .url-row-container {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .url-row-container:nth-of-type(2) {
+      margin-bottom: 2rem;
+    }
+
+    .url-row {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      font-family: 'Courier New', monospace;
+      font-size: 0.9rem;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .url-examples {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .url-example-link {
+      padding: 0.4rem 0.8rem;
+      background: #1a1a1a;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.75rem;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    .url-example-link:hover {
+      background: #222;
+      border-color: var(--accent);
+      color: var(--text);
+    }
+
+    /* Visually hidden but accessible to screen readers */
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border-width: 0;
+    }
+
+    .url-value {
+      color: var(--text);
+      flex: 1;
+    }
+
+    .url-value .highlight-red {
+      color: #ff6b6b;
+      text-decoration: line-through;
+      text-decoration-thickness: 2px;
+    }
+
+    .url-value .highlight-green {
+      color: #51cf66;
+      font-weight: 700;
+    }
+
+    .disclaimer {
+      background: rgba(255, 193, 7, 0.02);
+      border-top: 1px solid rgba(255, 193, 7, 0.1);
+      padding: 0.75rem 1rem;
+      margin: 0 -2rem -2rem -2rem;
+      border-radius: 0 0 12px 12px;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .disclaimer-icon {
+      flex-shrink: 0;
+      width: 14px;
+      height: 14px;
+      color: rgba(255, 193, 7, 0.5);
+    }
+
+    .disclaimer-text {
+      font-size: 0.75rem;
+      color: #6a6a6a;
+      line-height: 1.4;
+    }
+
+    .disclaimer-text a {
+      color: rgba(255, 193, 7, 0.7);
+      text-decoration: none;
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.2s;
+    }
+
+    .disclaimer-text a:hover {
+      border-bottom-color: rgba(255, 193, 7, 0.7);
+    }
+
+    .code-sample {
+      background: #111;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      text-align: left;
+      flex: 1;
+      min-width: 0;
+      position: relative;
+    }
+
+    .code-sample-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .copy-button {
+      background: #1a1a1a;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text-muted);
+      padding: 0.4rem 0.8rem;
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .copy-button:hover {
+      background: #222;
+      border-color: var(--accent);
+      color: var(--text);
+    }
+
+    .copy-button.copied {
+      background: #1a4d1a;
+      border-color: #51cf66;
+      color: #51cf66;
+    }
+
+    .copy-button svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    .alternatives {
+      margin-top: 4rem;
+      max-width: 1000px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .alternatives h2 {
+      font-size: 1.5rem;
+      margin-bottom: 1.5rem;
+      text-align: center;
+    }
+
+    .alternatives-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .code-sample h3 {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin: 0;
+    }
+
+    .code-sample pre {
+      background: #0a0a0a;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.25rem;
+      overflow-x: auto;
+      font-family: 'Courier New', monospace;
+      font-size: 0.85rem;
+      line-height: 1.6;
+    }
+
+    .code-sample .comment {
+      color: #6a737d;
+    }
+
+    .code-sample .keyword {
+      color: #ff7b72;
+    }
+
+    .code-sample .string {
+      color: #a5d6ff;
+    }
+
+    .code-sample .function {
+      color: #d2a8ff;
+    }
+
+    .read-more {
+      text-align: center;
+      margin: 3rem auto 0;
+    }
+
+    .read-more-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.5rem;
+      background: #111;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      text-decoration: none;
+      font-size: 0.95rem;
+      transition: all 0.2s;
+    }
+
+    .read-more-link:hover {
+      background: #1a1a1a;
+      border-color: var(--accent);
+      transform: translateY(-2px);
+    }
+
+    .read-more-link svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 2rem 0;
+      margin-top: 4rem;
+    }
+
+    .footer-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+
+    .footer-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: color 0.2s;
+    }
+
+    .footer-links a:hover {
+      color: var(--text);
+    }
+
+    .copyright {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .copyright svg {
+      width: 16px;
+      height: 16px;
+      opacity: 0.7;
+      vertical-align: middle;
+      transition: opacity 0.2s;
+    }
+
+    .copyright a {
+      display: inline-flex;
+      align-items: center;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .copyright a:hover svg {
+      opacity: 1;
+    }
+
+    .copyright span+svg::before {
+      content: '·';
+      margin: 0 0.5rem;
+      color: var(--text-muted);
+    }
+
+    /* Improve focus visibility */
+    a:focus-visible,
+    button:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    @media (max-width: 768px) {
+      main {
+        padding-top: 2rem;
+      }
+
+      .alternatives-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .url-row-container {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+      }
+
+      .url-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+        font-size: 0.75rem;
+      }
+
+      .url-examples {
+        width: 100%;
+        flex-wrap: wrap;
+      }
+
+      .footer-content {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .footer-links {
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+
+      .hero-title,
+      .hero-subtitle,
+      .url-example {
+        animation: fadeIn 0.6s ease-out;
+      }
+
+      .hero-subtitle {
+        animation-delay: 0.1s;
+      }
+
+      .url-example {
+        animation-delay: 0.2s;
+      }
+    }
+  </style>
 </head>
+
 <body>
-  <h1>StackBlitz Zip API</h1>
-  <p>Replace <code>stackblitz.com</code> with <code>stackblitz.zip</code> in any StackBlitz URL.</p>
-  <ul>
-    <script server>
-      const links = [
-        '/edit/nuxt-starter-k7spa3r4',
-        '/edit/vitejs-vite-starter',
-      ].map(path => new URL(path, $REQUEST.url).href)
-    </script>
-    <? for (const link of links) { ?>
-      <li><a href="<?= link ?>" target="_blank" rel="noopener noreferrer"><?= link ?></a></li>
-    <? } ?>
-  </ul>
-  <p>The <code>.zip</code> extension is optional but recommended for clarity.</p>
-  <footer style="margin-top:2rem;border-top:1px solid #eee;padding-top:1rem;font-size:0.9rem;color:#555">
-    <p>Star on GitHub: <a href="https://github.com/danielroe/stackblitz.zip" target="_blank" rel="noopener noreferrer">danielroe/stackblitz.zip</a></p>
+  <main id="main">
+    <div class="container">
+      <div class="hero">
+        <h1 class="hero-title">download StackBlitz<br>projects instantly</h1>
+        <p class="hero-subtitle">
+          no authentication or API keys required &ndash; just replace the domain.
+        </p>
+
+        <div class="url-example">
+          <h3>How it works</h3>
+          <script server>
+            const example = {
+              name: 'nuxt-starter-k7spa3r4',
+              path: '/edit/nuxt-starter-k7spa3r4'
+            }
+            example.url = new URL(example.path, $REQUEST.url).href
+          </script>
+          <div class="url-row-container">
+            <div class="url-row">
+              <span class="url-label sr-only">original:</span>
+              <span class="url-value">https://stackblitz<span class="highlight highlight-red"
+                  aria-label="dot com">.com</span>/edit/nuxt-starter</span>
+            </div>
+          </div>
+          <div class="url-row-container">
+            <div class="url-row">
+              <span class="url-label sr-only">download:</span>
+              <span class="url-value">https://stackblitz<span class="highlight highlight-green"
+                  aria-label="dot zip">.zip</span>/edit/nuxt-starter</span>
+            </div>
+            <div class="url-examples">
+              <a href="<?= example.url ?>" class="url-example-link" target="_blank" rel="noopener noreferrer">try
+                it</a>
+            </div>
+          </div>
+
+          <div class="disclaimer">
+            <svg class="disclaimer-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="16" x2="12" y2="12"></line>
+              <line x1="12" y1="8" x2="12.01" y2="8"></line>
+            </svg>
+            <p class="disclaimer-text">
+              not affiliated with StackBlitz &ndash; use in accordance with <a
+                href="https://stackblitz.com/terms-of-service" target="_blank" rel="noopener noreferrer">their
+                terms</a>
+            </p>
+          </div>
+        </div>
+
+        <div class="alternatives">
+          <h2>... or use locally</h2>
+          <div class="alternatives-grid">
+            <div class="code-sample">
+              <div class="code-sample-header">
+                <h3>CLI</h3>
+                <button class="copy-button" onclick="copyCode(this, 'cli')" aria-label="Copy CLI code">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                  </svg>
+                  <span>copy</span>
+                </button>
+              </div>
+              <pre><code lang="bash" id="cli-code"><span class="comment"># Download a project</span>
+npx stackblitz-zip https://stackblitz.com/edit/nuxt-starter
+
+<span class="comment"># Specify output path</span>
+npx stackblitz-zip https://stackblitz.com/edit/nuxt-starter my-project.zip</code></pre>
+            </div>
+
+            <div class="code-sample">
+              <div class="code-sample-header">
+                <h3>Programmatic</h3>
+                <button class="copy-button" onclick="copyCode(this, 'programmatic')"
+                  aria-label="Copy programmatic code">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                  </svg>
+                  <span>copy</span>
+                </button>
+              </div>
+              <pre><code lang="javascript" id="programmatic-code"><span class="comment">// Install the package</span>
+<span class="keyword">import</span> { <span class="function">downloadProject</span> } <span class="keyword">from</span> <span class="string">'stackblitz-zip'</span>
+
+<span class="comment">// Download a StackBlitz project</span>
+<span class="keyword">await</span> <span class="function">downloadProject</span>(<span class="string">'nuxt-starter-k7spa3r4'</span>, <span class="string">'output.zip'</span>)</code></pre>
+            </div>
+          </div>
+        </div>
+
+        <script>
+          function copyCode (button, type) {
+            const codeId = type + '-code'
+            const codeElement = document.getElementById(codeId)
+            const text = codeElement.textContent
+
+            navigator.clipboard.writeText(text).then(() => {
+              const span = button.querySelector('span')
+              const originalText = span.textContent
+
+              button.classList.add('copied')
+              span.textContent = 'copied!'
+
+              setTimeout(() => {
+                button.classList.remove('copied')
+                span.textContent = originalText
+              }, 2000)
+            }).catch(err => {
+              console.error('Failed to copy:', err)
+            })
+          }
+        </script>
+
+        <div class="read-more">
+          <a href="https://github.com/danielroe/stackblitz.zip#readme" class="read-more-link" target="_blank"
+            rel="noopener noreferrer">
+            <span>read documentation</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round" aria-hidden="true">
+              <path d="M5 12h14"></path>
+              <path d="m12 5 7 7-7 7"></path>
+            </svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="container">
+      <div class="footer-content">
+        <p class="copyright">
+          <span>built with</span>
+          <a href="https://nitro.build" target="_blank" rel="noopener noreferrer" aria-label="Nitro">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" aria-label="Nitro"
+              role="img">
+              <g fill="none">
+                <g clip-path="url(#SVGk9o6PzvS)">
+                  <path fill="url(#SVGZYtqYcni)" fill-rule="evenodd"
+                    d="M28.173 5.616C22.438-1.107 12.34-1.907 5.617 3.828s-7.524 15.834-1.789 22.557s15.834 7.523 22.557 1.788s7.523-15.834 1.788-22.557m-7.97 8.398c.616 0 1.01.668.7 1.202l-.089.153l-6.038 9.935a.62.62 0 0 1-.529.297h-.576a.604.604 0 0 1-.585-.755l1.638-6.335a.8.8 0 0 0-.774-1h-2.517a.8.8 0 0 1-.774-1l2.472-9.565a.74.74 0 0 1 .716-.544q.061 0 .107.002h2.535a.8.8 0 0 1 .793.908l-.016.114l-.966 5.653a.8.8 0 0 0 .788.935z"
+                    clip-rule="evenodd" />
+                  <path fill="url(#SVGZYtqYcni)" fill-rule="evenodd"
+                    d="M28.173 5.616C22.438-1.107 12.34-1.907 5.617 3.828s-7.524 15.834-1.789 22.557s15.834 7.523 22.557 1.788s7.523-15.834 1.788-22.557m-7.97 8.398c.616 0 1.01.668.7 1.202l-.089.153l-6.038 9.935a.62.62 0 0 1-.529.297h-.576a.604.604 0 0 1-.585-.755l1.638-6.335a.8.8 0 0 0-.774-1h-2.517a.8.8 0 0 1-.774-1l2.472-9.565a.74.74 0 0 1 .716-.544q.061 0 .107.002h2.535a.8.8 0 0 1 .793.908l-.016.114l-.966 5.653a.8.8 0 0 0 .788.935z"
+                    clip-rule="evenodd" />
+                  <mask id="SVGNVakPePJ" width="32" height="33" x="0" y="0" maskUnits="userSpaceOnUse"
+                    style="mask-type:alpha">
+                    <path fill="url(#SVGc3sq4cBM)"
+                      d="M16 32.001c8.837 0 16-7.163 16-16s-7.163-16-16-16s-16 7.163-16 16s7.163 16 16 16" />
+                  </mask>
+                  <g filter="url(#SVGUmprpm4d)" mask="url(#SVGNVakPePJ)">
+                    <path fill="#fff"
+                      d="M.89 10.741a16 16 0 1 0 30.365.434l-4.652 1.471a11.12 11.12 0 1 1-21.106-.3z" />
+                  </g>
+                </g>
+                <defs>
+                  <radialGradient id="SVGZYtqYcni" cx="0" cy="0" r="1"
+                    gradientTransform="matrix(31.2006 0 0 318.168 3.2 16)" gradientUnits="userSpaceOnUse">
+                    <stop stop-color="#31B2F3" />
+                    <stop offset=".474" stop-color="#F27CEC" />
+                    <stop offset="1" stop-color="#FD6641" />
+                  </radialGradient>
+                  <radialGradient id="SVGc3sq4cBM" cx="0" cy="0" r="1"
+                    gradientTransform="matrix(31.2 0 0 318.162 3.2 16.001)" gradientUnits="userSpaceOnUse">
+                    <stop stop-color="#F27CEC" />
+                    <stop offset=".484" stop-color="#31B2F3" />
+                    <stop offset="1" stop-color="#7D7573" />
+                  </radialGradient>
+                  <clipPath id="SVGk9o6PzvS">
+                    <path fill="#fff" d="M0 0h32v32H0z" />
+                  </clipPath>
+                  <filter id="SVGUmprpm4d" width="52" height="41.26" x="-10" y=".741" color-interpolation-filters="sRGB"
+                    filterUnits="userSpaceOnUse">
+                    <feFlood flood-opacity="0" result="BackgroundImageFix" />
+                    <feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
+                    <feGaussianBlur result="effect1_foregroundBlur_7_821" stdDeviation="5" />
+                  </filter>
+                </defs>
+              </g>
+            </svg>
+          </a>
+          <span>deployed on</span>
+          <a href="https://vercel.com" target="_blank" rel="noopener noreferrer" aria-label="Vercel">
+            <svg viewBox="0 0 24 24" fill="white" aria-label="Vercel" role="img">
+              <path d="M24 22.525H0l12-21.05 12 21.05z" />
+            </svg>
+          </a>
+        </p>
+        <ul class="footer-links">
+          <li>
+            <a href="https://github.com/danielroe/stackblitz.zip" target="_blank" rel="noopener noreferrer">
+              <svg viewBox="0 0 24 24" fill="currentColor"
+                style="width: 16px; height: 16px; vertical-align: middle; margin-right: 4px;" aria-hidden="true">
+                <path
+                  d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
+              </svg>
+              github
+            </a>
+          </li>
+          <li>
+            <a href="https://www.npmjs.com/package/stackblitz-zip" target="_blank" rel="noopener noreferrer">
+              <svg viewBox="0 0 24 24" fill="currentColor"
+                style="width: 16px; height: 16px; vertical-align: middle; margin-right: 4px;" aria-hidden="true">
+                <path
+                  d="M0 7.334v8h6.666v1.332H12v-1.332h12v-8H0zm6.666 6.664H5.334v-4H3.999v4H1.335V8.667h5.331v5.331zm4 0v1.336H8.001V8.667h5.334v5.332h-2.669v-.001zm12.001 0h-1.33v-4h-1.336v4h-1.335v-4h-1.33v4h-2.671V8.667h8.002v5.331zM10.665 10H12v2.667h-1.335V10z" />
+              </svg>
+              npm
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
   </footer>
 </body>
+
 </html>
