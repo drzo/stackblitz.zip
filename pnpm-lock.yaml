@@ -55,21 +55,20 @@ importers:
         specifier: latest
         version: 4.0.7(@types/debug@4.1.12)(@types/node@22.19.0)(jiti@2.6.1)(jsdom@0.2.19)(yaml@2.8.1)
 
-  nitro-app:
+  app:
     dependencies:
       h3:
         specifier: 2.0.1-rc.5
         version: 2.0.1-rc.5(crossws@0.4.1(srvx@0.8.16))
+      nitro:
+        specifier: latest
+        version: 3.0.1-alpha.0(chokidar@4.0.3)(lru-cache@11.2.2)(rolldown@1.0.0-beta.46)(vite@7.2.0(@types/node@22.19.0)(jiti@2.6.1)(yaml@2.8.1))
       stackblitz-zip:
         specifier: link:..
         version: link:..
       vite:
         specifier: ^7.2.0
         version: 7.2.0(@types/node@22.19.0)(jiti@2.6.1)(yaml@2.8.1)
-    devDependencies:
-      nitro:
-        specifier: latest
-        version: 3.0.1-alpha.0(chokidar@4.0.3)(lru-cache@11.2.2)(rolldown@1.0.0-beta.46)(vite@7.2.0(@types/node@22.19.0)(jiti@2.6.1)(yaml@2.8.1))
 
   playground:
     dependencies:
