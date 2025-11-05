@@ -1,8 +1,11 @@
-# StackBlitz.zip
+# stackblitz.zip
 
-A simple [Nitro](https://nitro.build) API that lets you download StackBlitz projects programmatically by changing the domain from `stackblitz.com` to `stackblitz.zip`.
+A simple [Nitro](https://nitro.build) API that lets you download [StackBlitz](https://stackblitz.com/) projects programmatically by changing the domain from `stackblitz.com` to `stackblitz.zip`.
 
 Deployed on Vercel at [stackblitz.zip](https://stackblitz.zip).
+
+> [!IMPORTANT]
+> This project is not affiliated with or endorsed by StackBlitz in any way. Users are responsible for ensuring their use of this tool complies with [StackBlitz's Terms of Service](https://stackblitz.com/terms-of-service). Please review their terms before using this tool.
 
 ## Usage
 

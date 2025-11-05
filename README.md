@@ -11,6 +11,9 @@
 
 There's no first-party API from [StackBlitz](https://stackblitz.com/) to download projects and I wanted to be able to download reproductions for issues more quickly.
 
+> [!IMPORTANT]
+> This project is not affiliated with or endorsed by StackBlitz in any way. Users are responsible for ensuring their use of this tool complies with [StackBlitz's Terms of Service](https://stackblitz.com/terms-of-service). Please review their terms before using this tool.
+
 ## 🌐 stackblitz.zip
 
 The easiest way to download a StackBlitz project is at **[stackblitz.zip](https://stackblitz.zip)**
