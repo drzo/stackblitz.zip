@@ -24,7 +24,7 @@ export default defineEventHandler(async (event) => {
 
   try {
     const projectId = parseUrl(stackblitzUrl)
-    const blob = await downloadToBlob({ projectId })
+    const blob = await downloadToBlob({ projectId, verbose: true })
 
     // Set headers for file download
     event.res.headers.set('Content-Type', 'application/zip')
