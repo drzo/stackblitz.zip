@@ -173,7 +173,7 @@ Published under [MIT License](./LICENCE).
 [npm-version-href]: https://npmjs.com/package/stackblitz-zip
 [npm-downloads-src]: https://img.shields.io/npm/dm/stackblitz-zip?style=flat-square
 [npm-downloads-href]: https://npm.chart.dev/stackblitz-zip
-[github-actions-src]: https://img.shields.io/github/actions/workflow/status/danielroe/stackblitz-zip/ci.yml?branch=main&style=flat-square
-[github-actions-href]: https://github.com/danielroe/stackblitz-zip/actions?query=workflow%3Aci
-[codecov-src]: https://img.shields.io/codecov/c/gh/danielroe/stackblitz-zip/main?style=flat-square
-[codecov-href]: https://codecov.io/gh/danielroe/stackblitz-zip
+[github-actions-src]: https://img.shields.io/github/actions/workflow/status/danielroe/stackblitz.zip/ci.yml?branch=main&style=flat-square
+[github-actions-href]: https://github.com/danielroe/stackblitz.zip/actions?query=workflow%3Aci
+[codecov-src]: https://img.shields.io/codecov/c/gh/danielroe/stackblitz.zip/main?style=flat-square
+[codecov-href]: https://codecov.io/gh/danielroe/stackblitz.zip
