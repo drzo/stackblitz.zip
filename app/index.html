@@ -495,8 +495,8 @@
           <h3>How it works</h3>
           <script server>
             const example = {
-              name: 'nuxt-starter-k7spa3r4',
-              path: '/edit/nuxt-starter-k7spa3r4'
+              name: 'nuxtblitz',
+              path: '/edit/nuxtblitz'
             }
             example.url = new URL(example.path, $REQUEST.url).href
           </script>
@@ -504,14 +504,14 @@
             <div class="url-row">
               <span class="url-label sr-only">original:</span>
               <span class="url-value">https://stackblitz<span class="highlight highlight-red"
-                  aria-label="dot com">.com</span>/edit/nuxt-starter</span>
+                  aria-label="dot com">.com</span>/edit/nuxtblitz</span>
             </div>
           </div>
           <div class="url-row-container">
             <div class="url-row">
               <span class="url-label sr-only">download:</span>
               <span class="url-value">https://stackblitz<span class="highlight highlight-green"
-                  aria-label="dot zip">.zip</span>/edit/nuxt-starter</span>
+                  aria-label="dot zip">.zip</span>/edit/nuxtblitz</span>
             </div>
             <div class="url-examples">
               <a href="<?= example.url ?>" class="url-example-link" target="_blank" rel="noopener noreferrer">try
@@ -550,10 +550,10 @@
                 </button>
               </div>
               <pre><code lang="bash" id="cli-code"><span class="comment"># Download a project</span>
-npx stackblitz-zip https://stackblitz.com/edit/nuxt-starter
+npx stackblitz-zip https://stackblitz.com/edit/nuxtblitz
 
 <span class="comment"># Specify output path</span>
-npx stackblitz-zip https://stackblitz.com/edit/nuxt-starter my-project.zip</code></pre>
+npx stackblitz-zip https://stackblitz.com/edit/nuxtblitz my-project.zip</code></pre>
             </div>
 
             <div class="code-sample">
@@ -573,7 +573,7 @@ npx stackblitz-zip https://stackblitz.com/edit/nuxt-starter my-project.zip</code
 <span class="keyword">import</span> { <span class="function">downloadProject</span> } <span class="keyword">from</span> <span class="string">'stackblitz-zip'</span>
 
 <span class="comment">// Download a StackBlitz project</span>
-<span class="keyword">await</span> <span class="function">downloadProject</span>(<span class="string">'nuxt-starter-k7spa3r4'</span>, <span class="string">'output.zip'</span>)</code></pre>
+<span class="keyword">await</span> <span class="function">downloadProject</span>(<span class="string">'nuxtblitz'</span>, <span class="string">'output.zip'</span>)</code></pre>
             </div>
           </div>
         </div>
