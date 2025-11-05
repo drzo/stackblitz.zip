@@ -1,18 +1,13 @@
-import { defineEventHandler, getRouterParam, HTTPError } from 'h3'
+import { defineHandler, HTTPError } from 'nitro/h3'
 import { downloadToBlob, parseUrl } from 'stackblitz-zip'
 
-export default defineEventHandler(async (event) => {
-  const path = getRouterParam(event, 'path')
-
-  if (!path) {
-    throw new HTTPError({
-      status: 400,
-      statusText: 'Missing path',
-    })
-  }
+export default defineHandler(async (event) => {
+  const { pathname } = event.url
+  if (pathname === '/')
+    return // render index.html
 
   // Convert stackblitz.zip URL to stackblitz.com URL
-  const stackblitzUrl = `https://stackblitz.com/${path.replace(/\.zip$/, '')}`
+  const stackblitzUrl = `https://stackblitz.com/${pathname.replace(/^\/|\.zip$/g, '')}`
 
   // Validate it's a valid StackBlitz edit URL
   if (!stackblitzUrl.match(/stackblitz\.com\/edit\/[^/?#]+/)) {

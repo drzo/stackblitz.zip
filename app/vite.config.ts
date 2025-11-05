@@ -6,7 +6,7 @@ export default defineConfig({
     nitro({
       config: {
         routeRules: {
-          '/': { prerender: true },
+          '/': { isr: true },
         },
       },
     }),

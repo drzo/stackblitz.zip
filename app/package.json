@@ -13,8 +13,7 @@
     "preview": "node .output/server/index.mjs"
   },
   "dependencies": {
-    "h3": "2.0.1-rc.5",
-    "nitro": "latest",
+    "nitro": "npm:nitro-nightly@3.0.1-20251105-152910-c0ee44bf",
     "stackblitz-zip": "workspace:*",
     "vite": "^7.2.0"
   }
