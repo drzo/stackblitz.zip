@@ -195,6 +195,28 @@ Parse a StackBlitz URL and extract the project ID.
 
 **Returns:** The project ID
 
+## Batch Download Projects
+
+This repository includes scripts to download multiple StackBlitz projects from a list and generate documentation.
+
+### Usage
+
+```bash
+# Download all projects from list.txt to the projects/ folder
+pnpm download:projects
+
+# Test with first 3 projects only
+pnpm tsx scripts/test-download.ts
+```
+
+The `download:projects` script will:
+1. Read project URLs from `list.txt`
+2. Parse project metadata from `stackblitz.csv`
+3. Download each project to the `projects/` directory using the `cloneProject` method
+4. Generate a comprehensive `projects/README.md` with project information
+
+**Note:** Downloaded projects are excluded from version control via `.gitignore`. The generated `projects/README.md` is committed to provide an index of all projects.
+
 ## Development
 
 ```bash

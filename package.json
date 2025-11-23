@@ -29,6 +29,7 @@
   "scripts": {
     "build": "tsdown",
     "dev": "vitest dev",
+    "download:projects": "tsx scripts/download-projects.ts",
     "lint": "eslint .",
     "prepare": "simple-git-hooks",
     "prepack": "pnpm build",
@@ -56,6 +57,7 @@
     "lint-staged": "latest",
     "simple-git-hooks": "latest",
     "tsdown": "latest",
+    "tsx": "^4.20.6",
     "typescript": "latest",
     "unzipit": "^1.4.3",
     "vitest": "latest"
