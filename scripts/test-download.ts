@@ -1,121 +1,14 @@
 #!/usr/bin/env node
 
-import { readFileSync } from 'node:fs'
-import { mkdir } from 'node:fs/promises'
+import { mkdir, writeFile } from 'node:fs/promises'
 import { dirname, resolve } from 'node:path'
 import process from 'node:process'
 import { fileURLToPath } from 'node:url'
 import { cloneProject } from '../src/download'
+import { generateReadme, parseProjectUrl, readProjectList, readProjectMetadata } from './utils'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
-
-/**
- * Parse URL and extract project ID, handling both stackblitz.com and stackblitz.zip domains
- */
-function parseProjectUrl(url: string): string {
-  // Handle both .com and .zip domains
-  const match = url.match(/stackblitz\.(com|zip)\/edit\/([^/?#]+)/)
-
-  if (!match || !match[2]) {
-    throw new Error(`Invalid StackBlitz URL: ${url}`)
-  }
-
-  return match[2]
-}
-
-interface ProjectInfo {
-  title: string
-  icon: string
-  url: string
-  description: string
-  stats: string[]
-  lastUpdated: string
-}
-
-/**
- * Parse CSV content and extract project information
- */
-function parseCSV(csvContent: string): ProjectInfo[] {
-  const lines = csvContent.split('\n')
-  const projects: ProjectInfo[] = []
-
-  // Skip header row (index 0) and process data rows
-  for (let i = 1; i < lines.length; i++) {
-    const line = lines[i]
-    if (!line.trim())
-      continue
-
-    // Simple CSV parsing - split by comma but respect quoted fields
-    const fields: string[] = []
-    let currentField = ''
-    let inQuotes = false
-
-    for (let j = 0; j < line.length; j++) {
-      const char = line[j]
-
-      if (char === '"') {
-        inQuotes = !inQuotes
-      }
-      else if (char === ',' && !inQuotes) {
-        fields.push(currentField)
-        currentField = ''
-      }
-      else {
-        currentField += char
-      }
-    }
-    fields.push(currentField) // Add last field
-
-    if (fields.length >= 8) {
-      const title = fields[3] || ''
-      const url = fields[2] || ''
-      const description = fields[4] || ''
-
-      // Only add if we have a valid URL
-      if (url && url.includes('stackblitz.com/edit/')) {
-        projects.push({
-          title,
-          icon: fields[1] || '',
-          url,
-          description,
-          stats: [fields[5] || '0', fields[6] || '0'], // commits, forks
-          lastUpdated: fields[7] || '',
-        })
-      }
-    }
-  }
-
-  return projects
-}
-
-/**
- * Generate README.md content from project information
- */
-function generateReadme(projects: ProjectInfo[]): string {
-  let content = '# StackBlitz Projects\n\n'
-  content += `This directory contains ${projects.length} cloned StackBlitz projects.\n\n`
-  content += '## Project List\n\n'
-
-  for (const project of projects) {
-    const projectId = parseProjectUrl(project.url)
-    content += `### ${project.title}\n\n`
-    content += `- **URL**: [${project.url}](${project.url})\n`
-    content += `- **Project ID**: \`${projectId}\`\n`
-    if (project.description) {
-      content += `- **Description**: ${project.description}\n`
-    }
-    if (project.stats.length >= 2) {
-      content += `- **Stats**: ${project.stats[0]} commits, ${project.stats[1]} forks\n`
-    }
-    if (project.lastUpdated) {
-      content += `- **Last Updated**: ${project.lastUpdated}\n`
-    }
-    content += `- **Local Path**: \`./projects/${projectId}\`\n\n`
-  }
-
-  return content
-}
 
 /**
  * Main function to download projects and generate README
@@ -132,18 +25,12 @@ async function main() {
 
   // Read list.txt to get URLs
   console.log('📄 Reading list.txt...')
-  const listContent = readFileSync(listPath, 'utf-8')
-  const urls = listContent
-    .split('\n')
-    .map(line => line.trim())
-    .filter(line => line && line.startsWith('http'))
-
+  const urls = readProjectList(listPath)
   console.log(`Found ${urls.length} URLs in list.txt`)
 
   // Read and parse CSV
   console.log('📄 Reading stackblitz.csv...')
-  const csvContent = readFileSync(csvPath, 'utf-8')
-  const projects = parseCSV(csvContent)
+  const projects = readProjectMetadata(csvPath)
   console.log(`Parsed ${projects.length} projects from stackblitz.csv`)
 
   // TEST MODE: Only download first 3 projects
@@ -185,7 +72,6 @@ async function main() {
   console.log('\n📝 Generating projects/README.md...')
   const readmeContent = generateReadme(projects)
   const readmePath = resolve(projectsDir, 'README.md')
-  const { writeFile } = await import('node:fs/promises')
   await writeFile(readmePath, readmeContent, 'utf-8')
   console.log(`✅ README.md created at ${readmePath}`)
 
