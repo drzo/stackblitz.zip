@@ -25,6 +25,9 @@ export function parseProjectUrl(url: string): string {
 
 /**
  * Parse CSV content and extract project information
+ * Note: This is a simple CSV parser that works for the current data format.
+ * It doesn't handle all edge cases like escaped quotes within quoted fields.
+ * For production use with complex CSV data, consider using a library like papaparse.
  */
 export function parseCSV(csvContent: string): ProjectInfo[] {
   const lines = csvContent.split('\n')
