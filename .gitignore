@@ -9,3 +9,4 @@ coverage
 .nitro
 .output
 .vercel
+projects/*/
